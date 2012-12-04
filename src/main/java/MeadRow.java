@@ -13,9 +13,9 @@ public class MeadRow {
 	public static final byte[] c_meta = Bytes.toBytes("meta");
 	private final float delta;
 	private final float rms;
-	private String brewId;
-	private String date;
-	private String key;
+	private final String brewId;
+	private final String date;
+	private final String key;
 	
 	public MeadRow(Result row) {
 		this.key = Bytes.toString(row.getRow());
@@ -26,14 +26,7 @@ public class MeadRow {
 	}
 	
 	public MeadRow(HTable table, String key) throws IOException {
-		Get get = new Get(Bytes.toBytes(key));
-		get.addFamily(c_meta);
-		Result row = table.get(get);
-		this.key = Bytes.toString(row.getRow());
-		this.delta = Float.parseFloat(Bytes.toString(row.getValue(c_meta, Bytes.toBytes("delta"))));
-		this.rms = Float.parseFloat(Bytes.toString(row.getValue(c_meta, Bytes.toBytes("rms"))));
-		this.brewId = Bytes.toString(row.getValue(c_meta, Bytes.toBytes("brew_id")));
-		this.date = Bytes.toString(row.getValue(c_meta, Bytes.toBytes("time")));
+		this(table.get(new Get(Bytes.toBytes(key)).addFamily(c_meta)));
 	}
 	
 	public boolean save(HTable table) throws IOException {
